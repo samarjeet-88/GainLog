@@ -1,10 +1,6 @@
-import DBConnection from "./index.js"
 import logger from "../config/logConfig.js";
+import dbConnection from "./index.js";
 
-
-
-
-const dbConnectionObject = new DBConnection();
 
 
 class Transaction {
@@ -17,7 +13,7 @@ class Transaction {
     }
 
     static async start() {
-        const client = await dbConnectionObject.getDBConnection();
+        const client = await dbConnection.getDBConnection();
         await client.query('BEGIN');
         return new Transaction(client);
     }

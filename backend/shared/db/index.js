@@ -37,4 +37,6 @@ class DBConnection {
     }
 }
 
-export default DBConnection;
+
+const dbConnection=new DBConnection()
+export default dbConnection;
