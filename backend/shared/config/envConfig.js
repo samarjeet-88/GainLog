@@ -11,7 +11,13 @@ const envConfig = {
         url: `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`
     },
     app: {
-        port: process.env.APP_PORT
+        port: process.env.APP_PORT,
+        env: process.env.APP_ENV
+    },
+    jwt: {
+        secret: process.env.JWT_SECRET,
+        accessTokenExpiryTime: process.env.ACCESS_TOKEN_EXPIRE_MINUTES,
+        refreshTokenExpiryTime: process.env.REFRESH_TOKEN_EXPIRE_MINUTES
     }
 }
 

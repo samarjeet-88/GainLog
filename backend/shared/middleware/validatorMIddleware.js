@@ -1,7 +1,7 @@
 
 
 
-const validate=(schema)=>{
+const validateMiddleware=(schema)=>{
     return(req,res,next)=>{
         try{
             req.body=schema.parse(req.body);
@@ -13,4 +13,4 @@ const validate=(schema)=>{
 }
 
 
-export default validate;
+export default validateMiddleware;

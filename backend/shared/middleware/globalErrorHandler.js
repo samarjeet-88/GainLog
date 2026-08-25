@@ -1,7 +1,7 @@
 import { ZodError } from "zod";
-
 import logger from "../config/logConfig.js";
-import ApiError from "../errors/ApiError.js";
+import ApiError from "../utils/ApiError.js";
+
 
 const globalErrorHandler = (err,req,res,next) => {
   logger.error(
@@ -12,7 +12,7 @@ const globalErrorHandler = (err,req,res,next) => {
     return res.status(400).json({
       success: false,
       message: "Validation failed",
-      details: err.issues,
+      details: err.issues.map(issue => issue.message),
     });
   }
 

@@ -3,16 +3,24 @@ import envConfig from "./shared/config/envConfig.js";
 import dbConnection from "./shared/db/index.js";
 import logger from "./shared/config/logConfig.js";
 import globalErrorHandler from "./shared/middleware/globalErrorHandler.js";
+import cookieParser from "cookie-parser";
+import authRouter from "./auth/route/auth.route.js";
+import swaggerUi from "swagger-ui-express";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
+const swaggerDocument = require("./shared/swagger/swagger.json");
 
 
 const app = express();
 
 
 app.use(express.json());
+app.use(cookieParser());
 
 
-
-
+app.use("/v1/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/v1/api/auth", authRouter);
 
 app.use(globalErrorHandler)
 
