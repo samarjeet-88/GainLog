@@ -16,8 +16,7 @@ const envConfig = {
     },
     jwt: {
         secret: process.env.JWT_SECRET,
-        accessTokenExpiryTime: process.env.ACCESS_TOKEN_EXPIRE_MINUTES,
-        refreshTokenExpiryTime: process.env.REFRESH_TOKEN_EXPIRE_MINUTES
+        accessTokenExpiryTime: process.env.ACCESS_TOKEN_EXPIRE_MINUTES
     }
 }
 

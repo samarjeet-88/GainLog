@@ -6,6 +6,7 @@ import bcrypt from "bcrypt";
 import envConfig from "../../shared/config/envConfig.js";
 import jwt from "jsonwebtoken"
 import BaseService from "../../shared/service/BaseService.js";
+import crypto from "crypto";
 
 class AuthService {
 
@@ -52,9 +53,12 @@ class AuthService {
 
 
             const accessToken = AuthService.generateToken(id, envConfig.jwt.accessTokenExpiryTime);
-            const refreshToken = AuthService.generateToken(id, envConfig.jwt.refreshTokenExpiryTime);
+
+            const refreshToken = crypto.randomBytes(32).toString("base64url");
+            const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
             const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-            await AuthRepository.refreshTokenCreateRepo(tx,id, refreshToken, expiresAt);
+
+            await AuthRepository.refreshTokenCreateRepo(tx, id, refreshTokenHash, expiresAt)
 
             logger.info("Auth service code finish")
 
