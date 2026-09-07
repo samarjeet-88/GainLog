@@ -11,12 +11,12 @@ class AuthController {
         const { accessToken, refreshToken } =
             await AuthService.register(email, password, confirmPassword, fullName)
 
-        res.cookie("accessToken", accessToken, {
-            httpOnly: true,
-            secure: envConfig.app.env === "production",
-            sameSite: "strict",
-            maxAge: 900000
-        })
+        // res.cookie("accessToken", accessToken, {
+        //     httpOnly: true,
+        //     secure: envConfig.app.env === "production",
+        //     sameSite: "strict",
+        //     maxAge: 900000
+        // })
 
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
@@ -27,7 +27,8 @@ class AuthController {
 
         return res.status(201).json({
             success: true,
-            message: "User Registered successfully"
+            message: "User Registered successfully",
+            data: accessToken
         })
     }
 }

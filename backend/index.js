@@ -7,12 +7,19 @@ import cookieParser from "cookie-parser";
 import authRouter from "./auth/route/auth.route.js";
 import swaggerUi from "swagger-ui-express";
 import { createRequire } from "module";
+import cors from "cors"
 
 const require = createRequire(import.meta.url);
 const swaggerDocument = require("./shared/swagger/swagger.json");
 
 
 const app = express();
+
+// move all the urls into .env
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}))
 
 
 app.use(express.json());

@@ -1,4 +1,4 @@
-import { pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { pgTable, timestamp, uuid, varchar, boolean } from "drizzle-orm/pg-core";
 import users from "./users.schema.js";
 
 const refreshToken = pgTable("refreshToken", {
@@ -7,6 +7,8 @@ const refreshToken = pgTable("refreshToken", {
   tokenValue: varchar("tokenValue", { length: 64 }).primaryKey(),
 
   expiresAt: timestamp("expiresAt", { withTimezone: true }).notNull(),
+
+  isBlacklist: boolean("isActive").default(false).notNull()
 });
 
 

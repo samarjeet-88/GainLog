@@ -2,20 +2,12 @@ import logger from "../../shared/config/logConfig.js"
 import Transaction from "../../shared/db/TransactionClass.js";
 import ApiError from "../../shared/utils/ApiError.js";
 import AuthRepository from "../repository/auth.repository.js";
-import bcrypt from "bcrypt";
 import envConfig from "../../shared/config/envConfig.js";
 import jwt from "jsonwebtoken"
 import BaseService from "../../shared/service/BaseService.js";
 import crypto from "crypto";
 
 class AuthService {
-
-
-    static hashValue = async (value) => {
-        const hashedPassword = await bcrypt.hash(value, 12);
-        return hashedPassword;
-    }
-
 
     static generateToken = (payload, expireTime = "15m") => {
         const token = jwt.sign(
@@ -44,7 +36,7 @@ class AuthService {
                 throw ApiError.badRequest("Password do not match")
             }
 
-            const hashedPassword = await AuthService.hashValue(password);
+            const hashedPassword = await BaseService.hashValue(password);
 
             const id = BaseService.generateId();
 
