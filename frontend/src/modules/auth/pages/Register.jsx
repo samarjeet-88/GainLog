@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { registerUser } from '../services/register';
 import { handleAsync } from '../../../shared/utils/handleAsync';
+import Popup from '../../popup/Popup';
 
 const Register = () => {
     const [fullName, setFullName] = useState('');
@@ -12,19 +13,33 @@ const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+    const [popupText, setPopupText] = useState('');
+    const [popupKey, setPopupKey] = useState(null);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Generate unique key on every submission to restart animation & timer
+        setPopupKey(Date.now());
+
+        // Simulated popup demonstration while backend is not connected
+        setPopupText(
+            `The operative email ${email || 'ram22@yomail.com'} is already registered to an active dossier.`
+        );
+
+        /* 
+        // Real API handler (uncomment when backend API is live)
         const [data, error] = await handleAsync(
             registerUser({ fullName, email, password, confirmPassword })
         );
 
         if (error) {
             console.error('Registration failed:', error.message);
+            setPopupKey(Date.now());
+            setPopupText(error.message || 'Registration failed');
             return;
         }
-
-        console.log('Registration successful:', data);
+        */
     };
 
     return (
@@ -49,7 +64,7 @@ const Register = () => {
                             LOG EVERY <span className="text-[#C81E3A]">EXERCISE.</span>
                         </h2>
 
-                        <p className="mt-4 text-sm font-sans text-white/50 leading-relaxed max-w-sm">
+                        <p className="mt-4 text-md font-semibold font-sans text-white/50 leading-relaxed max-w-sm">
                             Seamlessly log your daily exercises, weight, and set reps to track your gains and master your training.
                         </p>
                     </div>
@@ -149,6 +164,14 @@ const Register = () => {
                     </div>
                 </div>
             </div>
+
+            <Popup
+                key={popupKey}
+                popupKey={popupKey}
+                message={popupText}
+                autoCloseMs={4000}
+                onClose={() => setPopupText('')}
+            />
         </div>
     );
 };
