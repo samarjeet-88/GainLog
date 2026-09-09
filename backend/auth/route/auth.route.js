@@ -5,12 +5,11 @@ import { registerSchema } from "../validator/auth.validator.js";
 import asyncHandler from "../../shared/utils/asyncHandler.js";
 
 
+const authRouter = Router();
 
-const authRouter=Router();
 
-
-authRouter.post('/register',validateMiddleware(registerSchema),
-asyncHandler(AuthController.registerController))
+authRouter.post('/register', validateMiddleware(registerSchema),
+    asyncHandler(AuthController.registerController))
 
 
 
