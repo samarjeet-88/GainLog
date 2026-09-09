@@ -78,7 +78,6 @@ class AuthService {
         return { url, state }
     }
 
-
     static googleCallback = async (code, state) => {
 
         const storedState = req.cookies.oauth_state;
