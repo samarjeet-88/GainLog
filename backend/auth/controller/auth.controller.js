@@ -20,7 +20,7 @@ class AuthController {
 
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            secure: envConfig.app.env === "production",
+            secure: envConfig.app.env === "PRODUCTION",
             sameSite: "strict",
             maxAge: 604800000
         })
@@ -30,6 +30,25 @@ class AuthController {
             message: "User Registered successfully",
             data: accessToken
         })
+    }
+
+    static googleLogin = async (req, res, next) => {
+
+        const { url, state } = await AuthService.getAuthorizationUrl();
+
+        res.cookie("oauth_state", state, {
+            httpOnly: true,
+            secure: envConfig.app.env === "PRODUCTION",
+            sameSite: "strict",
+            maxAge: 10 * 60 * 1000
+
+        })
+
+        return res.redirect(url);
+    }
+
+    static googleCallback = async (req, res, next) => {
+        const { code, state } = req.query;
     }
 }
 

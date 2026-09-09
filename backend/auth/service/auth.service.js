@@ -59,6 +59,35 @@ class AuthService {
 
         return result;
     }
+
+
+    static getAuthorizationUrl = async () => {
+
+        const state = crypto.randomBytes(32).toString("hex");
+        const params = new URLSearchParams({
+            client_id: envConfig.googleOAuth.clientId,
+            redirect_uri: envConfig.googleOAuth.redirectUrl,
+            response_type: "code",
+            scope: "openid email profile",
+            state,
+        });
+
+        const url =
+            `${envConfig.googleOAuth.googleLink}?${params.toString()}`;
+
+        return { url, state }
+    }
+
+
+    static googleCallback = async (code, state) => {
+
+        const storedState = req.cookies.oauth_state;
+        if (!storedState || storedState !== state)
+            throw ApiError.badRequest("Invalid OAuth State");
+
+
+
+    }
 }
 
 

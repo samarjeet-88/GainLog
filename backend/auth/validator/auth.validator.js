@@ -16,7 +16,10 @@ const registerSchema = z.object({
 })
 
 
-
+const googleCallbackSchema = z.object({
+    code: z.string(),
+    state: z.string()
+})
 
 
 

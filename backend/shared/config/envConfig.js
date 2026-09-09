@@ -17,6 +17,12 @@ const envConfig = {
     jwt: {
         secret: process.env.JWT_SECRET,
         accessTokenExpiryTime: process.env.ACCESS_TOKEN_EXPIRE_MINUTES
+    },
+    googleOAuth: {
+        googleLink: process.env.GOOGLE_LINK,
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        redirectUrl: process.env.GOOGLE_REDIRECT_URL
     }
 }
 
