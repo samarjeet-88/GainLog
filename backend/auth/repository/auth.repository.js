@@ -30,6 +30,11 @@ class AuthRepository {
     static linkGoogleIdRepo = async (tx, id, googleId) => {
         await tx.query(`UPDATE "users" SET "googleId"=$1 WHERE id=$2`, [googleId, id]);
     }
+
+    static findUserByEmail = async (tx, email) => {
+        const result = await tx.query(`SELECT u.id,u.email,u.password FROM "users" u where u.email=$1`, [email])
+        return result.rows[0];
+    }
 }
 
 export default AuthRepository;

@@ -1,7 +1,11 @@
 import React from 'react';
 
-const GoogleAuthButton = ({ label = "Continue with Google" }) => {
-    const handleGoogleSignIn = () => {
+const GoogleAuthButton = ({ label = "Continue with Google", onClick }) => {
+    const handleGoogleSignIn = (e) => {
+        if (onClick) {
+            onClick(e);
+            return;
+        }
         const width = 500;
         const height = 600;
         const left = Math.max(0, (window.screen.width - width) / 2);

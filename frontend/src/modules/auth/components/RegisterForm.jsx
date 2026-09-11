@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { registerUser } from '../services/register';
 import { handleAsync } from '../../../shared/utils/handleAsync';
 import Popup from '../../popup/Popup';
@@ -51,7 +52,7 @@ const RegisterForm = () => {
                         type="text"
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        className="w-full bg-[#E8E4DB] text-black placeholder-black/40 rounded-sm px-3.5 py-2 text-sm outline-none border border-transparent focus:border-[#C81E3A] focus:ring-2 focus:ring-[#C81E3A]/20"
+                        className="w-full bg-[#E8E4DB] text-black placeholder-black/40 rounded-sm px-3.5 py-2 text-sm outline-none border border-transparent focus:border-[#C81E3A] focus:ring-2 focus:ring-[#C81E3A]/20 transition-colors"
                         placeholder="J. Doe"
                     />
                 </div>
@@ -64,7 +65,7 @@ const RegisterForm = () => {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full bg-[#E8E4DB] text-black placeholder-black/40 rounded-sm px-3.5 py-2 text-sm outline-none border border-transparent focus:border-[#C81E3A] focus:ring-2 focus:ring-[#C81E3A]/20"
+                        className="w-full bg-[#E8E4DB] text-black placeholder-black/40 rounded-sm px-3.5 py-2 text-sm outline-none border border-transparent focus:border-[#C81E3A] focus:ring-2 focus:ring-[#C81E3A]/20 transition-colors"
                         placeholder="athlete@gainlog.co"
                     />
                 </div>
@@ -78,7 +79,7 @@ const RegisterForm = () => {
                             type={showPassword ? "text" : "password"}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-[#E8E4DB] text-black placeholder-black/40 rounded-sm px-3.5 py-2 pr-10 text-sm outline-none border border-transparent focus:border-[#C81E3A] focus:ring-2 focus:ring-[#C81E3A]/20"
+                            className="w-full bg-[#E8E4DB] text-black placeholder-black/40 rounded-sm px-3.5 py-2 pr-10 text-sm outline-none border border-transparent focus:border-[#C81E3A] focus:ring-2 focus:ring-[#C81E3A]/20 transition-colors"
                             placeholder="••••••••"
                         />
                         <button
@@ -100,7 +101,7 @@ const RegisterForm = () => {
                             type={showConfirmPassword ? "text" : "password"}
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
-                            className="w-full bg-[#E8E4DB] text-black placeholder-black/40 rounded-sm px-3.5 py-2 pr-10 text-sm outline-none border border-transparent focus:border-[#C81E3A] focus:ring-2 focus:ring-[#C81E3A]/20"
+                            className="w-full bg-[#E8E4DB] text-black placeholder-black/40 rounded-sm px-3.5 py-2 pr-10 text-sm outline-none border border-transparent focus:border-[#C81E3A] focus:ring-2 focus:ring-[#C81E3A]/20 transition-colors"
                             placeholder="••••••••"
                         />
                         <button
@@ -119,6 +120,18 @@ const RegisterForm = () => {
                 >
                     ENLIST
                 </button>
+
+                <div className="text-center mt-1">
+                    <span className="text-md font-bold font-sans text-white/60">
+                        Already have an account?{' '}
+                        <Link
+                            to="/login"
+                            className="text-[#C81E3A] hover:underline font-semibold cursor-pointer"
+                        >
+                            Log in
+                        </Link>
+                    </span>
+                </div>
             </form>
 
             <Popup

@@ -73,6 +73,44 @@ class AuthController {
         })
 
     }
+
+    static loginController = async (req, res, next) => {
+        const { email, password } = req.body;
+
+        const { accessToken, refreshToken } = await AuthService.login(email, password);
+
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: envConfig.app.env === "PRODUCTION",
+            sameSite: "strict",
+            maxAge: 604800000
+        })
+
+        return res.status(200).json({
+            success: true,
+            message: "User Logged in successfully",
+            data: accessToken
+        })
+    }
+
+
+    static forgetPassword = async (req, res, next) => {
+        const { email } = req.body;
+
+        await AuthService.forgetPassword(email);
+
+        return res.status(200).json({
+            success: true,
+            message: "Password reset OTP sent successfully",
+        })
+
+    }
+
+    static verifyOtp = async (req, res, next) => {
+        const { otp, email } = res.body;
+        await AuthService.verifyPassword(otp, email)
+
+    }
 }
 
 export default AuthController

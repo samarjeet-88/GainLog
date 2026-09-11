@@ -3,35 +3,16 @@ import Transaction from "../../shared/db/TransactionClass.js";
 import ApiError from "../../shared/utils/ApiError.js";
 import AuthRepository from "../repository/auth.repository.js";
 import envConfig from "../../shared/config/envConfig.js";
-import jwt from "jsonwebtoken"
 import BaseService from "../../shared/service/BaseService.js";
 import crypto from "crypto";
 import googleOauth from "./oauth.service.js";
+import RedisClass from "../../shared/redis/redisClass.js";
+import RedisService from "../../shared/redis/redisService.js";
+import BaseAuthService from "./baseAuth.service.js";
 
-class AuthService {
+class AuthService extends BaseAuthService {
 
-    static generateToken = (payload, expireTime = "15m") => {
-        const token = jwt.sign(
-            { payload: payload },
-            envConfig.jwt.secret,
-            {
-                expiresIn: expireTime
-            }
-        )
-        return token;
-    }
-
-    static generateUserTokens = async (tx, userId) => {
-        const accessToken = AuthService.generateToken({ sub: userId }, envConfig.jwt.accessTokenExpiryTime);
-
-        const refreshToken = crypto.randomBytes(32).toString("base64url");
-        const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
-        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
-        await AuthRepository.refreshTokenCreateRepo(tx, userId, refreshTokenHash, expiresAt);
-
-        return { accessToken, refreshToken };
-    }
+    static #redisClient = RedisClass.getInstance().getClient();
 
 
     static register = async (email, password, confirmPassword, fullName) => {
@@ -115,6 +96,48 @@ class AuthService {
         });
 
         return result;
+    }
+
+    static login = async (email, password) => {
+
+        const result = await Transaction.runTransaction(async (tx) => {
+            const user = await AuthRepository.findUserByEmail(tx, email);
+            if (!user) throw ApiError.badRequest("User does not exist");
+
+            const isPasswordValid = await BaseService.hashValue(password) == user.password;
+            if (!isPasswordValid) throw ApiError.badRequest("Password does not match")
+
+            const { accessToken, refreshToken } = await AuthService.generateUserTokens(tx, user.id);
+
+            return { accessToken, refreshToken }
+        })
+
+        return result;
+    }
+
+    static forgetPassword = async (email) => {
+
+        const result = await Transaction.runTransaction(async (tx) => {
+
+            const user = await AuthRepository.findUserByEmail(tx, email);
+            if (!user) throw ApiError.badRequest("User does not exist");
+            return user;
+        })
+        const passwordToken = AuthService.generatePasswordToken(6);
+        const options = { EX: 300 }
+
+        await RedisService.setString(AuthService.#redisClient,
+            `passwordReset:otp:${email}`, passwordToken, options);
+
+        logger.info("Password Token set successfully")
+    }
+
+
+    static verifyPassword = async (otp, email) => {
+
+        const storedOtp = await RedisService.getString(`passwordReset:otp:${email}`);
+        if (!storedOtp) throw ApiError.badRequest("OTP has expired");
+        if (otp !== storedOtp) throw ApiError.badRequest("OTP is wrong");
     }
 }
 
