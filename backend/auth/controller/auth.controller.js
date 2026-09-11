@@ -49,6 +49,29 @@ class AuthController {
 
     static googleCallback = async (req, res, next) => {
         const { code, state } = req.query;
+
+        const storedState = req.cookies.oauth_state;
+
+
+        const { accessToken, refreshToken, isNewUser } = await AuthService.googleCallback(code, state, storedState);
+
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: envConfig.app.env === "PRODUCTION",
+            sameSite: "strict",
+            maxAge: 604800000
+        })
+
+
+        const statusCode = isNewUser ? 201 : 200;
+        const message = isNewUser ? "User Registered successfully" : "User Logged in successfully";
+
+        return res.status(statusCode).json({
+            success: true,
+            message: message,
+            data: accessToken
+        })
+
     }
 }
 

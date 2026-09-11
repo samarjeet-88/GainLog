@@ -6,6 +6,7 @@ import envConfig from "../../shared/config/envConfig.js";
 import jwt from "jsonwebtoken"
 import BaseService from "../../shared/service/BaseService.js";
 import crypto from "crypto";
+import googleOauth from "./oauth.service.js";
 
 class AuthService {
 
@@ -18,6 +19,18 @@ class AuthService {
             }
         )
         return token;
+    }
+
+    static generateUserTokens = async (tx, userId) => {
+        const accessToken = AuthService.generateToken({ sub: userId }, envConfig.jwt.accessTokenExpiryTime);
+
+        const refreshToken = crypto.randomBytes(32).toString("base64url");
+        const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+        await AuthRepository.refreshTokenCreateRepo(tx, userId, refreshTokenHash, expiresAt);
+
+        return { accessToken, refreshToken };
     }
 
 
@@ -44,13 +57,7 @@ class AuthService {
             logger.info("User Inserted")
 
 
-            const accessToken = AuthService.generateToken(id, envConfig.jwt.accessTokenExpiryTime);
-
-            const refreshToken = crypto.randomBytes(32).toString("base64url");
-            const refreshTokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
-            const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-
-            await AuthRepository.refreshTokenCreateRepo(tx, id, refreshTokenHash, expiresAt)
+            const { accessToken, refreshToken } = await AuthService.generateUserTokens(tx, id);
 
             logger.info("Auth service code finish")
 
@@ -78,14 +85,36 @@ class AuthService {
         return { url, state }
     }
 
-    static googleCallback = async (code, state) => {
+    static googleCallback = async (code, state, storedState) => {
 
-        const storedState = req.cookies.oauth_state;
         if (!storedState || storedState !== state)
             throw ApiError.badRequest("Invalid OAuth State");
 
 
+        const token = await googleOauth.googleExchangeCode(code);
 
+        const payload = await googleOauth.verifyIdToken(token);
+
+        const result = await Transaction.runTransaction(async (tx) => {
+
+            let user = await AuthRepository.findUserByGoogleIdOrEmail(tx, payload.googleId, payload.email);
+            let isNewUser = false;
+
+            if (!user) {
+                const newUserId = BaseService.generateId();
+                await AuthRepository.userCreateOAuthRepo(tx, newUserId, payload.fullName, payload.email, payload.googleId);
+                user = { id: newUserId };
+                isNewUser = true;
+            } else if (!user.googleId) {
+                await AuthRepository.linkGoogleIdRepo(tx, user.id, payload.googleId);
+            }
+
+            const { accessToken, refreshToken } = await AuthService.generateUserTokens(tx, user.id);
+
+            return { accessToken, refreshToken, isNewUser };
+        });
+
+        return result;
     }
 }
 
