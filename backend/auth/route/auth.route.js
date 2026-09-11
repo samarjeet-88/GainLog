@@ -1,7 +1,7 @@
 import { Router } from "express";
 import AuthController from "../controller/auth.controller.js";
 import validateMiddleware from "../../shared/middleware/validatorMIddleware.js";
-import { registerSchema } from "../validator/auth.validator.js";
+import { registerSchema, googleCallbackSchema } from "../validator/auth.validator.js";
 import asyncHandler from "../../shared/utils/asyncHandler.js";
 import validateQueryMiddleware from "../../shared/middleware/validatorQueryMiddleware.js";
 
@@ -20,7 +20,8 @@ authRouter.get("/google",
 )
 
 authRouter.get("/google/callback",
-    validateQueryMiddleware(requestAnimationFrame.query),
-    AuthController.googleCallback)
+    validateQueryMiddleware(googleCallbackSchema),
+    asyncHandler(AuthController.googleCallback)
+)
 
 export default authRouter;

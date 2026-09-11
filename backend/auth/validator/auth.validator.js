@@ -23,4 +23,4 @@ const googleCallbackSchema = z.object({
 
 
 
-export { registerSchema }
+export { registerSchema, googleCallbackSchema }

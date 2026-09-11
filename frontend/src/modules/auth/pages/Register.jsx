@@ -3,6 +3,8 @@ import { Eye, EyeOff } from 'lucide-react';
 import { registerUser } from '../services/register';
 import { handleAsync } from '../../../shared/utils/handleAsync';
 import Popup from '../../popup/Popup';
+import GoogleAuthButton from '../components/GoogleAuthButton';
+import AuthDivider from '../components/AuthDivider';
 
 const Register = () => {
     const [fullName, setFullName] = useState('');
@@ -22,24 +24,17 @@ const Register = () => {
         // Generate unique key on every submission to restart animation & timer
         setPopupKey(Date.now());
 
-        // Simulated popup demonstration while backend is not connected
-        setPopupText(
-            `The operative email ${email || 'ram22@yomail.com'} is already registered to an active dossier.`
-        );
-
-        /* 
-        // Real API handler (uncomment when backend API is live)
         const [data, error] = await handleAsync(
             registerUser({ fullName, email, password, confirmPassword })
         );
 
         if (error) {
             console.error('Registration failed:', error.message);
-            setPopupKey(Date.now());
-            setPopupText(error.message || 'Registration failed');
+            setPopupText(error.response?.data?.message || error.message || 'Registration failed');
             return;
         }
-        */
+
+        setPopupText(data?.message || 'Operative successfully enlisted into dossier.');
     };
 
     return (
@@ -52,9 +47,9 @@ const Register = () => {
             />
 
             <div className="relative flex flex-col md:flex-row w-full h-full z-10">
-                <div className="hidden md:flex flex-col justify-center w-1/2 p-8 md:p-16">
+                <div className="hidden md:flex flex-col justify-center w-1/2 p-8 md:p-14 h-full">
                     <div className="max-w-md">
-                        <h1 className="text-2xl md:text-3xl font-normal font-bebas tracking-wide mb-8">
+                        <h1 className="text-2xl md:text-3xl font-normal font-bebas tracking-wide mb-6">
                             <span className="text-white">GAIN</span>
                             <span className="text-[#C81E3A]">LOG</span>
                         </h1>
@@ -70,48 +65,51 @@ const Register = () => {
                     </div>
                 </div>
 
-                <div className="flex flex-col justify-center w-full md:w-1/2 px-6 py-10 md:px-16 my-auto">
+                <div className="flex flex-col justify-center w-full md:w-1/2 px-6 py-6 md:px-14 h-full my-auto">
                     <div className="max-w-sm w-full mx-auto">
-                        <div className="md:hidden mb-6 text-center">
+                        <div className="md:hidden mb-4 text-center">
                             <h1 className="text-3xl font-normal font-bebas tracking-wide">
                                 <span className="text-white">GAIN</span>
                                 <span className="text-[#C81E3A]">LOG</span>
                             </h1>
                         </div>
 
-                        <h2 className="text-3xl md:text-4xl font-normal font-bebas tracking-wide text-white mb-6 text-center md:text-left">
+                        <h2 className="text-2xl md:text-3xl font-normal font-bebas tracking-wide text-white mb-3 md:mb-4 text-center md:text-left">
                             JOIN THE CAMP
                         </h2>
 
-                        <form onSubmit={handleSubmit} className="border-t-2 border-[#C81E3A] pt-5 flex flex-col gap-4">
+                        <form onSubmit={handleSubmit} className="border-t-2 border-[#C81E3A] pt-3.5 flex flex-col gap-2.5">
+                            <GoogleAuthButton />
+                            <AuthDivider />
+
                             <div>
-                                <label className="block text-xs font-bold tracking-widest uppercase text-white/70 mb-1.5">
+                                <label className="block text-xs font-bold tracking-widest uppercase text-white/70 mb-1">
                                     Full name
                                 </label>
                                 <input
                                     type="text"
                                     value={fullName}
                                     onChange={(e) => setFullName(e.target.value)}
-                                    className="w-full bg-[#E8E4DB] text-black placeholder-black/40 rounded-sm px-4 py-2.5 text-sm outline-none border border-transparent focus:border-[#C81E3A] focus:ring-2 focus:ring-[#C81E3A]/20"
+                                    className="w-full bg-[#E8E4DB] text-black placeholder-black/40 rounded-sm px-3.5 py-2 text-sm outline-none border border-transparent focus:border-[#C81E3A] focus:ring-2 focus:ring-[#C81E3A]/20"
                                     placeholder="J. Doe"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold tracking-widest uppercase text-white/70 mb-1.5">
+                                <label className="block text-xs font-bold tracking-widest uppercase text-white/70 mb-1">
                                     Email
                                 </label>
                                 <input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full bg-[#E8E4DB] text-black placeholder-black/40 rounded-sm px-4 py-2.5 text-sm outline-none border border-transparent focus:border-[#C81E3A] focus:ring-2 focus:ring-[#C81E3A]/20"
+                                    className="w-full bg-[#E8E4DB] text-black placeholder-black/40 rounded-sm px-3.5 py-2 text-sm outline-none border border-transparent focus:border-[#C81E3A] focus:ring-2 focus:ring-[#C81E3A]/20"
                                     placeholder="athlete@gainlog.co"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold tracking-widest uppercase text-white/70 mb-1.5">
+                                <label className="block text-xs font-bold tracking-widest uppercase text-white/70 mb-1">
                                     Password
                                 </label>
                                 <div className="relative flex items-center">
@@ -119,7 +117,7 @@ const Register = () => {
                                         type={showPassword ? "text" : "password"}
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="w-full bg-[#E8E4DB] text-black placeholder-black/40 rounded-sm px-4 py-2.5 pr-10 text-sm outline-none border border-transparent focus:border-[#C81E3A] focus:ring-2 focus:ring-[#C81E3A]/20"
+                                        className="w-full bg-[#E8E4DB] text-black placeholder-black/40 rounded-sm px-3.5 py-2 pr-10 text-sm outline-none border border-transparent focus:border-[#C81E3A] focus:ring-2 focus:ring-[#C81E3A]/20"
                                         placeholder="••••••••"
                                     />
                                     <button
@@ -133,7 +131,7 @@ const Register = () => {
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold tracking-widest uppercase text-white/70 mb-1.5">
+                                <label className="block text-xs font-bold tracking-widest uppercase text-white/70 mb-1">
                                     Confirm Password
                                 </label>
                                 <div className="relative flex items-center">
@@ -141,7 +139,7 @@ const Register = () => {
                                         type={showConfirmPassword ? "text" : "password"}
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
-                                        className="w-full bg-[#E8E4DB] text-black placeholder-black/40 rounded-sm px-4 py-2.5 pr-10 text-sm outline-none border border-transparent focus:border-[#C81E3A] focus:ring-2 focus:ring-[#C81E3A]/20"
+                                        className="w-full bg-[#E8E4DB] text-black placeholder-black/40 rounded-sm px-3.5 py-2 pr-10 text-sm outline-none border border-transparent focus:border-[#C81E3A] focus:ring-2 focus:ring-[#C81E3A]/20"
                                         placeholder="••••••••"
                                     />
                                     <button
@@ -156,7 +154,7 @@ const Register = () => {
 
                             <button
                                 type="submit"
-                                className="mt-1 bg-[#C81E3A] hover:bg-[#E05A6D] text-white font-bebas text-xl tracking-wide py-3 rounded-sm transition-colors cursor-pointer"
+                                className="mt-1 bg-[#C81E3A] hover:bg-[#E05A6D] text-white font-bebas text-lg md:text-xl tracking-wide py-2.5 rounded-sm transition-colors cursor-pointer"
                             >
                                 ENLIST
                             </button>
@@ -177,4 +175,3 @@ const Register = () => {
 };
 
 export default Register;
-
